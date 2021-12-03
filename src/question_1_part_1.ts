@@ -2,7 +2,7 @@ import * as fs from 'fs'
 
 const LINE_BREAK = '\n'
 
-const file = fs.readFileSync('./src/question_1_input.txt', 'utf-8')
+const file = fs.readFileSync('./src/question_1_part_1_input.txt', 'utf-8')
 
 const measurements = file.split(LINE_BREAK).map(Number)
 
