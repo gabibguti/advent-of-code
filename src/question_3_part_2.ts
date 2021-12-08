@@ -8,6 +8,12 @@ type Rate = {
   decimal?: number
 }
 
+type DecisionResponse =
+  | 'useBinaryNumbersWithBitZero'
+  | 'useBinaryNumbersWithBitOne'
+
+type Decide = (totalOnes: number, totalZeros: number) => DecisionResponse
+
 const file = fs.readFileSync('./src/question_3_part_1_input.txt', 'utf-8')
 
 const binaryNumbers = file.split(LINE_BREAK)
@@ -18,70 +24,6 @@ let oxygenRate: Rate = {
 let co2Rate: Rate = {
   binary: '',
 }
-
-/* First scratch of calculating oxygen rate, then realized was a recursive iteration */
-
-// let loadingOxygenRate = true
-// let validNumbersForOxygenRate = Array.from(binaryNumbers)
-// let bitPosition = 0
-
-// while (loadingOxygenRate === true) {
-//   const binaryNumbersWithBitZero = binaryNumbers.filter(
-//     (binaryNumber) => binaryNumber.substr(bitPosition, 1) === '0'
-//   )
-//   const totalZeros = binaryNumbersWithBitZero.length
-
-//   const binaryNumbersWithBitOne = binaryNumbers.filter(
-//     (binaryNumber) => binaryNumber.substr(bitPosition, 1) === '1'
-//   )
-//   const totalOnes = binaryNumbersWithBitOne.length
-
-//   if (totalZeros > totalOnes) {
-//     validNumbersForOxygenRate = binaryNumbersWithBitZero
-//   } else {
-//     validNumbersForOxygenRate = binaryNumbersWithBitOne
-//   }
-
-//   if (validNumbersForOxygenRate.length === 1) {
-//     loadingOxygenRate = false
-//   }
-
-//   bitPosition++
-// }
-
-/* Second scrath of calculating oxygen rate, then decided we could have a decision function for each rate */
-
-// const getOxygenRate = (
-//   validNumbersForOxygenRate: string[],
-//   bitPosition: number = 0
-// ) => {
-//   if (validNumbersForOxygenRate.length === 1) {
-//     const [finalValidNumber] = validNumbersForOxygenRate
-//     return finalValidNumber
-//   }
-
-//   const binaryNumbersWithBitZero = binaryNumbers.filter(
-//     (binaryNumber) => binaryNumber.substr(bitPosition, 1) === '0'
-//   )
-//   const totalZeros = binaryNumbersWithBitZero.length
-
-//   const binaryNumbersWithBitOne = binaryNumbers.filter(
-//     (binaryNumber) => binaryNumber.substr(bitPosition, 1) === '1'
-//   )
-//   const totalOnes = binaryNumbersWithBitOne.length
-
-//   if (totalZeros > totalOnes) {
-//     return getOxygenRate(binaryNumbersWithBitZero, bitPosition + 1)
-//   } else {
-//     return getOxygenRate(binaryNumbersWithBitOne, bitPosition + 1)
-//   }
-// }
-
-type DecisionResponse =
-  | 'useBinaryNumbersWithBitZero'
-  | 'useBinaryNumbersWithBitOne'
-
-type Decide = (totalOnes: number, totalZeros: number) => DecisionResponse
 
 const mostCommonValue: Decide = (totalOnes, totalZeros) => {
   if (totalZeros > totalOnes) {
