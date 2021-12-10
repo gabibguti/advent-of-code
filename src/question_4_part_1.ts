@@ -54,14 +54,25 @@ class Board {
 
     this.checkCols()
   }
+
+  public sumUnchecked = () => {
+    return this.rows.reduce<number>((sum, currRow) => {
+      const uncheckedRowNumbers = currRow.filter(
+        (el) => !this.checkedNumbers.includes(el)
+      )
+      const totalUncheckedInRow = uncheckedRowNumbers.reduce<number>(
+        (rowSum, el) => rowSum + el,
+        0
+      )
+
+      return sum + totalUncheckedInRow
+    }, 0)
+  }
 }
 
 const LINE_BREAK = '\n'
 
-const file = fs.readFileSync(
-  './src/question_4_part_1_example_input.txt',
-  'utf-8'
-)
+const file = fs.readFileSync('./src/question_4_part_1_input.txt', 'utf-8')
 
 const lines = file.split(LINE_BREAK)
 
@@ -108,9 +119,12 @@ const { listOfBoardRows } = boardsLines.reduce<{
 
 const boards = listOfBoardRows.map((boardRows) => new Board(boardRows))
 
-let hasWinner: boolean = false
+let winner: {
+  board?: Board
+  points?: number
+} = {}
 
-while (!hasWinner) {
+while (!winner.board) {
   const drawNumber = drawNumbers.shift()
 
   if (drawNumber === undefined) {
@@ -121,9 +135,14 @@ while (!hasWinner) {
   boards.forEach((board, index) => {
     board.checkBoard(drawNumber)
     if (board.isWinner) {
-      hasWinner = true
+      winner = {
+        board,
+        points: board.sumUnchecked() * drawNumber,
+      }
       console.log(`Board ${index} is the winner!`)
       return
     }
   })
 }
+
+console.log('Winner points', winner.points)
