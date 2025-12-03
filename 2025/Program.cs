@@ -5,7 +5,9 @@
         {
             // Day1_SecretEntrance.Part1();
             // Day1_SecretEntrance.Part2();
-            Day2_GiftShop.Part1();
+            // Day2_GiftShop.Part1();
+            // Day2_GiftShop.Part2();
+            Day3_Lobby.Part1();
         }
     }
 }

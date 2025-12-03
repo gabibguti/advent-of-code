@@ -66,66 +66,28 @@ public class DivisorFinder
 
 public static class Day2_GiftShop
 {
-    public static int FindSmallestDivisor(int n)
-    {
-        // 1. Handle Trivial Case
-        if (n <= 1)
-        {
-            // 1 has no divisor greater than 1.
-            return n;
-        }
-
-        // 2. Check for Divisibility by 2
-        if (n % 2 == 0)
-        {
-            return 2;
-        }
-        // 3. Check Odd Divisors up to the Square Root
-        // We only need to check up to the square root of n (i*i <= n).
-        for (int i = 3; i * i <= n; i += 2)
-        {
-            if (n % i == 0)
-            {
-                // Found the smallest divisor
-                return i;
-            }
-        }
-
-        // 4. If no divisor was found, the number is prime.
-        // The smallest divisor greater than 1 is the number itself.
-        return n;
-    }
-
     public static bool IsValidProductIdWithPartition(string product_id_str, int divisor)
     {
         int n_digits = product_id_str.Length / divisor; // 5
-        // Console.WriteLine("Debug n_digits: " + n_digits);
 
         string last_slice = "*";
 
         for (int part = 1; part < divisor + 1; part++) // 3 parts
         {
-            // Console.WriteLine("Debug part: " + part);
             // Find current product ID slice
             int init = n_digits * (part - 1); // 0, 5, 10
 
-            // Console.WriteLine("Debug init: " + init);
-
             string product_id_slice = "";
 
-            // Console.WriteLine("Debug Substring with init and end");
             product_id_slice = product_id_str.Substring(init, n_digits);
-            // Console.WriteLine("Debug product_id_slice: " + product_id_slice);
 
             // Compare to last slice
             if (last_slice != "*" && !last_slice.Equals(product_id_slice))
             {
-                // Console.WriteLine("VALID!");
                 return true;
             }
             last_slice = product_id_slice;
         }
-        // Console.WriteLine("INVALID!");
         return false;
     }
 
@@ -146,48 +108,34 @@ public static class Day2_GiftShop
         return RecursiveIsValidProductIdWithPartition(finder, product_id_str);
     }
 
-    public static bool IsValidProductId(long product_id)
+    public static bool IsValidProductId_Part1(long product_id)
     {
         string product_id_str = product_id.ToString();
 
-        // int smallest_divisor = FindSmallestDivisor(product_id_str.Length);
+        if (product_id_str.Length % 2 != 0)
+        {
+            return true;
+        }
+
+        int halfLength = product_id_str.Length / 2;
+
+        string firstHalf = product_id_str.Substring(0, halfLength);
+        string secondHalf = product_id_str.Substring(halfLength);
+
+        if (firstHalf.Equals(secondHalf))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static bool IsValidProductId_Part2(long product_id)
+    {
+        string product_id_str = product_id.ToString();
+
         DivisorFinder finder = new DivisorFinder(product_id_str.Length);
 
         return RecursiveIsValidProductIdWithPartition(finder, product_id_str);
-
-        // if (smallest_divisor != 2)
-        // {
-        // 111 case
-        // char last_c = '*';
-        // foreach (char c in product_id_str)
-        // {
-        //     if (last_c != '*' && c != last_c)
-        //     {
-        //         return true;
-        //     }
-        //     last_c = c;
-        // }
-        // return false;
-        // }
-
-        // if (smallest_divisor == 2)
-        // {
-        //     int halfLength = product_id_str.Length / 2;
-
-        //     string firstHalf = product_id_str.Substring(0, halfLength);
-        //     string secondHalf = product_id_str.Substring(halfLength);
-
-        //     // Console.WriteLine("HALFS: " + firstHalf + " and " + secondHalf);
-
-        //     if (firstHalf.Equals(secondHalf))
-        //     {
-        //         // Console.WriteLine("Invalid ID: " + product_id_str);
-        //         return false;
-        //     }
-        //     return true;
-        // }
-
-
     }
     public static void Part1()
     {
@@ -212,7 +160,48 @@ public static class Day2_GiftShop
                 for (long product_id = initial_product_id; product_id < final_product_id + 1; product_id++)
                 {
                     Console.WriteLine("Product ID: " + product_id);
-                    if (!IsValidProductId(product_id))
+                    if (!IsValidProductId_Part1(product_id))
+                    {
+                        invalid_product_id_sum += product_id;
+                        invalid_product_ids.Add(product_id);
+                    }
+                }
+            }
+
+            Console.WriteLine("Sum of Invalid IDs: " + invalid_product_id_sum);
+            string result = string.Join(", ", invalid_product_ids);
+            Console.WriteLine("Invalid IDs: " + result);
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"An I/O error occurred: {ex.Message}");
+        }
+    }
+
+    public static void Part2()
+    {
+        Console.WriteLine("Day 2: Gift Shop: Part 2");
+
+        string filepath = "./day_2_input.txt";
+
+        try
+        {
+            string file_content = File.ReadAllText(filepath);
+            string[] product_id_ranges = file_content.Split(",");
+
+            long invalid_product_id_sum = 0;
+            List<long> invalid_product_ids = new List<long> { };
+
+            foreach (string product_id_range in product_id_ranges)
+            {
+                string[] product_id_boundary = product_id_range.Split("-");
+                long initial_product_id = long.Parse(product_id_boundary[0]);
+                long final_product_id = long.Parse(product_id_boundary[1]);
+
+                for (long product_id = initial_product_id; product_id < final_product_id + 1; product_id++)
+                {
+                    Console.WriteLine("Product ID: " + product_id);
+                    if (!IsValidProductId_Part2(product_id))
                     {
                         invalid_product_id_sum += product_id;
                         invalid_product_ids.Add(product_id);
