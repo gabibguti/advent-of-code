@@ -74,37 +74,36 @@ public static class Day3_Lobby
         return cur_out_joltage + battery_joltage;
     }
 
-    public static int FindLowestDigit(string cur_out_joltage)
+    public static List<string> AllReplacementCombinations(string cur_out_joltage, string battery_joltage)
     {
-        int min = 0;
-        int index = -1;
+        List<string> combinations = new List<string> { };
+
         for (int i = 0; i < cur_out_joltage.Length; i++)
         {
-            char digit = cur_out_joltage[i];
-            if (min == 0 || int.Parse(digit.ToString()) < min)
-            {
-                min = int.Parse(digit.ToString());
-                index = i;
-            }
+            string out_part1 = i == 0 ? "" : cur_out_joltage.Substring(0, i);
+            string out_part2 = i == cur_out_joltage.Length ? "" : cur_out_joltage.Substring(i + 1);
+            string joltage_option = out_part1 + out_part2 + battery_joltage;
+
+            combinations.Add(joltage_option);
         }
-        return index;
+        return combinations;
     }
 
     public static long MaxLocalJoltage(string cur_out_joltage, string battery_joltage)
     {
         long current_joltage = long.Parse(cur_out_joltage);
 
-        // Option 1: Replace last digit
-        long joltage_option_1 = long.Parse(cur_out_joltage.Substring(0, cur_out_joltage.Length - 1) + battery_joltage);
-        // Option 2: Remove first digit and append new as last digit
-        long joltage_option_2 = long.Parse(cur_out_joltage.Substring(1) + battery_joltage);
-        // Option 3: Break digits sequence on the lowest number
-        int index = FindLowestDigit(cur_out_joltage);
-        string out_part1 = cur_out_joltage.Substring(0, index);
-        string out_part2 = cur_out_joltage.Substring(index + 1);
-        long joltage_option_3 = long.Parse(out_part1 + out_part2 + battery_joltage);
+        List<string> combinations = AllReplacementCombinations(cur_out_joltage, battery_joltage);
 
-        long max = Math.Max(current_joltage, Math.Max(joltage_option_1, Math.Max(joltage_option_2, joltage_option_3)));
+        long max = current_joltage;
+
+        foreach (string combination in combinations)
+        {
+            if (Math.Max(current_joltage, long.Parse(combination)) > max)
+            {
+                max = long.Parse(combination);
+            }
+        }
 
         return max;
     }
@@ -122,8 +121,6 @@ public static class Day3_Lobby
             foreach (string line in File.ReadLines(filePath))
             {
                 string bank = line;
-
-                Console.WriteLine("Debug: bank: " + bank);
 
                 string out_joltage = "";
                 int out_joltage_digits = 12;
@@ -145,8 +142,6 @@ public static class Day3_Lobby
 
                     // Update output joltage
                     out_joltage = max.ToString();
-                    Console.WriteLine("Max Local Joltage: " + max);
-                    Console.WriteLine("debug_index: " + debug_index);
 
                     debug_index += 1;
                 }
